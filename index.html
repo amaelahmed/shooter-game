@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Space Shooter - Created by Amal Ahammed</title>
+    <style>
+        html, body { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            width: 100%; 
+            overflow: hidden; 
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3d 100%);
+            font-family: 'Orbitron', sans-serif; 
+            color: #fff; 
+            touch-action: none;
+        }
+        #gameContainer { 
+            position: relative; 
+            width: 100vw; 
+            height: 100vh; 
+            max-width: 800px; 
+            max-height: 600px; 
+            margin: 0 auto; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        #gameArea { 
+            width: 100%; 
+            height: 100%; 
+            background: #0f0f23; 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: 8px;
+        }
+        #player { 
+            width: 5%; 
+            height: 6.67%; 
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI4MCI+PHBhdGggZD0iTTEwIDcwTDE4IDMwTDIwIDEwTDIyIDMwTDMwIDcwSDEwWiIgZmlsbD0iIzAwZmZjYyIgc3Ryb2tlPSIjMDBjYzk5IiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=') no-repeat center/contain; 
+            position: absolute; 
+            bottom: 3.33%; 
+            transition: left 0.1s ease; 
+        }
+        #player.shield { 
+            /* No glow */
+        }
+        @keyframes shieldPulse { 
+            from { } 
+            to { } 
+        }
+        .bullet { 
+            width: 0.5%; 
+            height: 2%; 
+            background: #ff0000; 
+            position: absolute; 
+            border-radius: 50%;
+        }
+        .bullet.speed { 
+            height: 3%; 
+            background: #00ff00; 
+        }
+        .bullet.laser { 
+            width: 0.75%; 
+            height: 100%; 
+            background: linear-gradient(to top, #ff8000, #ffcc00); 
+        }
+        .enemy { 
+            width: 4%; 
+            height: 5.33%; 
+            position: absolute; 
+        }
+        .enemy.level-0 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjZmYwMGZmIiBzdHJva2U9IiNjYzAwZmYiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
+        .enemy.level-1 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjMDBmZjAwIiBzdHJva2U9IiMwMGNjMDAiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
+        .enemy.level-2 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjMDAwMGZmIiBzdHJva2U9IiMwMDAwY2MiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
+        .enemy.level-3 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjZmZmZjAwIiBzdHJva2U9IiNjY2NjMDAiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
+        .powerup { 
+            width: 2.5%; 
+            height: 3.33%; 
+            position: absolute; 
+            border-radius: 50%; 
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: pulse 1s infinite alternate; 
+        }
+        .powerup.life { background: radial-gradient(circle, #ffff00, #ffcc00); }
+        .powerup.speed { background: radial-gradient(circle, #00ff00, #00cc00); }
+        .powerup.multi { background: radial-gradient(circle, #0000ff, #0000cc); }
+        .powerup.laser { background: radial-gradient(circle, #ff8000, #ffcc00); }
+        @keyframes pulse { 
+            from { transform: scale(1); } 
+            to { transform: scale(1.3); }
+        }
+        #ui { 
+            position: absolute; 
+            top: 1.67%; 
+            left: 1.25%; 
+            font-size: clamp(18px, 2.5vw, 22px);
+            background: rgba(0, 15, 35, 0.7);
+            padding: 5px 10px; 
+            border-radius: 5px; 
+            border: 1px solid #00ffcc;
+        }
+        #lives { 
+            position: absolute; 
+            top: 1.67%; 
+            right: 1.25%; 
+            display: flex; 
+            gap: 8px;
+            background: rgba(0, 15, 35, 0.7);
+            padding: 5px; 
+            border-radius: 5px; 
+            border: 1px solid #00ffcc;
+        }
+        .heart { 
+            width: clamp(18px, 2.5vw, 22px);
+            height: clamp(18px, 2.5vw, 22px); 
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0Ij4KICA8cGF0aCBkPSJNMTIgMjEuNzUgTDkuNzUgMjAgQzQuNSAxNS41IDAuNzUgMTAuMjUgMC43NSA2IDAuNzUgMy41IDMuMjUgMSAxMiAxQzIwLjc1IDEgMjMuMjUgMy41IDIzLjI1IDYgMjMuMjUgMTAuMjUgMTkuNSAxNS41IDE0LjI1IDIwIEwxMiAyMS43NXoiIGZpbGw9IiNmZjAwMDAiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjwvc3ZnPg==') no-repeat center/contain; 
+        }
+        #startScreen, #gameOverScreen { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: radial-gradient(circle, rgba(0, 15, 35, 0.9), rgba(0, 0, 0, 0.95));
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 10; 
+            backdrop-filter: blur(3px);
+        }
+        #gameOverScreen { display: none; }
+        button { 
+            padding: clamp(12px, 2vw, 16px) clamp(25px, 3.75vw, 35px);
+            font-size: clamp(16px, 2.25vw, 20px); 
+            background: linear-gradient(45deg, #00ffcc, #ff00ff); 
+            border: 2px solid #fff;
+            border-radius: 8px;
+            color: #fff; 
+            cursor: pointer; 
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        h1 { 
+            font-size: clamp(36px, 6vw, 54px);
+            margin: clamp(15px, 1.67vh, 25px) 0; 
+        }
+        p {
+            font-size: clamp(20px, 3vw, 24px);
+            margin: 10px 0;
+        }
+        #credit { 
+            font-size: clamp(14px, 2vw, 18px); 
+            margin: clamp(8px, 1vh, 12px) 0; 
+            color: #e0e0e0;
+            letter-spacing: 1px;
+        }
+        #touchControls {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            display: none;
+            justify-content: space-between;
+            padding: 0 10px;
+            box-sizing: border-box;
+            z-index: 5;
+        }
+        .touchButton {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #00ffcc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+            touch-action: none;
+            user-select: none;
+        }
+        .touchButton:active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        @media (max-width: 600px) {
+            #touchControls {
+                display: flex;
+            }
+            #ui, #lives {
+                font-size: 16px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="gameArea">
+            <div id="player"></div>
+            <div id="ui">Score: <span id="score">0</span> | Level: <span id="level">1</span></div>
+            <div id="lives"></div>
+            <div id="startScreen">
+                <h1>Space Shooter</h1>
+                <div id="credit">Created by Amal Ahammed</div>
+                <button id="startButton">Start Game</button>
+            </div>
+            <div id="gameOverScreen">
+                <h1>Game Over</h1>
+                <p>Final Score: <span id="finalScore">0</span></p>
+                <button id="restartButton">Play Again</button>
+            </div>
+            <div id="touchControls">
+                <div id="leftButton" class="touchButton">⬅️</div>
+                <div id="rightButton" class="touchButton">➡️</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="shootSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-laser-weapon-shot-1682.mp3" type="audio/mp3">
+    </audio>
+    <audio id="enemyDestroyedSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-small-explosion-1668.mp3" type="audio/mp3">
+    </audio>
+    <audio id="powerupSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-266.mp3" type="audio/mp3">
+    </audio>
+    <audio id="playerHitSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-player-jumping-in-a-video-game-2043.mp3" type="audio/mp3">
+    </audio>
+    <audio id="gameOverSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-player-losing-electronic-game-2041.mp3" type="audio/mp3">
+    </audio>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const player = document.getElementById('player');
+        const scoreDisplay = document.getElementById('score');
+        const levelDisplay = document.getElementById('level');
+        const livesDisplay = document.getElementById('lives');
+        const finalScore = document.getElementById('finalScore');
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const startButton = document.getElementById('startButton');
+        const restartButton = document.getElementById('restartButton');
+        const leftButton = document.getElementById('leftButton');
+        const rightButton = document.getElementById('rightButton');
+
+        // Audio objects
+        const shootSound = document.getElementById('shootSound');
+        const enemyDestroyedSound = document.getElementById('enemyDestroyedSound');
+        const powerupSound = document.getElementById('powerupSound');
+        const playerHitSound = document.getElementById('playerHitSound');
+        const gameOverSound = document.getElementById('gameOverSound');
+
+        let playerX = 47.5;
+        let score = 0;
+        let lives = 3;
+        let level = 1;
+        let gameActive = false;
+        let bullets = [];
+        let enemies = [];
+        let powerups = [];
+        let lastShotTime = 0;
+        let shootCooldown = 100;
+        let bulletSpeed = 1.67;
+        let multiShot = false;
+        let laserActive = false;
+        let baseEnemySpeed = 0.3;
+        const moveStep = 5;
+
+        // Verify DOM elements
+        console.log('startButton:', startButton);
+        console.log('restartButton:', restartButton);
+
+        function updateDimensions() {
+            const rect = gameArea.getBoundingClientRect();
+            return { width: rect.width, height: rect.height };
+        }
+
+        function updateLivesDisplay() {
+            livesDisplay.innerHTML = '';
+            for (let i = 0; i < lives; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                livesDisplay.appendChild(heart);
+            }
+        }
+
+        function moveLeft() {
+            if (gameActive && playerX > 0) {
+                playerX = Math.max(0, playerX - moveStep);
+                player.style.left = playerX + '%';
+                console.log('Moved left to:', playerX);
+            }
+        }
+
+        function moveRight() {
+            if (gameActive && playerX < 95) {
+                playerX = Math.min(95, playerX + moveStep);
+                player.style.left = playerX + '%';
+                console.log('Moved right to:', playerX);
+            }
+        }
+
+        // Keyboard Controls (for desktop testing)
+        document.addEventListener('keydown', (e) => {
+            if (!gameActive) return;
+            if (e.key === 'ArrowLeft') moveLeft();
+            else if (e.key === 'ArrowRight') moveRight();
+        });
+
+        // Touch/Button Controls
+        leftButton.addEventListener('click', () => moveLeft());
+        rightButton.addEventListener('click', () => moveRight());
+
+        leftButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveLeft();
+        });
+        rightButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveRight();
+        });
+
+        function shoot() {
+            const now = Date.now();
+            if (now - lastShotTime < shootCooldown) return;
+            lastShotTime = now;
+            shootSound.currentTime = 0;
+            shootSound.play();
+            if (laserActive) {
+                const bullet = document.createElement('div');
+                bullet.className = 'bullet laser';
+                bullet.style.left = (playerX + 2.25) + '%';
+                bullet.style.bottom = '10%';
+                gameArea.appendChild(bullet);
+                bullets.push(bullet);
+            } else if (multiShot) {
+                for (let i = -1; i <= 1; i++) {
+                    const bullet = document.createElement('div');
+                    bullet.className = 'bullet';
+                    bullet.style.left = (playerX + 2.25 + i * 2) + '%';
+                    bullet.style.bottom = '10%';
+                    bullet.dataset.angle = i * 0.1;
+                    gameArea.appendChild(bullet);
+                    bullets.push(bullet);
+                }
+            } else {
+                const bullet = document.createElement('div');
+                bullet.className = 'bullet' + (bulletSpeed > 1.67 ? ' speed' : '');
+                bullet.style.left = (playerX + 2.25) + '%';
+                bullet.style.bottom = '10%';
+                bullet.dataset.angle = '0';
+                gameArea.appendChild(bullet);
+                bullets.push(bullet);
+            }
+        }
+
+        function spawnEnemy() {
+            if (!gameActive) return;
+            const numEnemies = Math.min(level + 1, 5);
+            for (let i = 0; i < numEnemies; i++) {
+                const enemy = document.createElement('div');
+                enemy.className = 'enemy';
+                const enemyLevel = Math.floor(score / 100);
+                enemy.classList.add(`level-${Math.min(enemyLevel, 3)}`);
+                let leftPos = Math.random() * (96 - numEnemies * 4) + (i * 4);
+                enemy.style.left = Math.max(0, Math.min(leftPos, 96)) + '%';
+                enemy.style.top = '-5.33%';
+                gameArea.appendChild(enemy);
+                enemies.push({ element: enemy, y: -5.33 });
+                console.log(`Spawned enemy ${i} at left: ${enemy.style.left}, top: ${enemy.style.top}`);
+            }
+        }
+
+        function spawnPowerup() {
+            if (!gameActive) return;
+            const powerup = document.createElement('div');
+            powerup.className = 'powerup';
+            const types = ['life', 'speed', 'multi', 'laser'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            powerup.classList.add(type);
+            powerup.style.left = Math.random() * 97.5 + '%';
+            powerup.style.top = '-3.33%';
+            gameArea.appendChild(powerup);
+            powerups.push({ element: powerup, y: -3.33, type });
+        }
+
+        function updateGame() {
+            if (!gameActive) return;
+            const { height } = updateDimensions();
+
+            // Automatic firing
+            shoot();
+
+            level = Math.floor(score / 500) + 1;
+            levelDisplay.textContent = level;
+
+            const enemySpeed = baseEnemySpeed + (Math.min(level, 5) * 0.05) - (level > 5 ? (level - 5) * 0.02 : 0);
+
+            bullets.forEach((bullet, index) => {
+                let bulletY = parseFloat(bullet.style.bottom) || 10;
+                const angle = parseFloat(bullet.dataset.angle) || 0;
+                bulletY += bulletSpeed;
+                bullet.style.bottom = bulletY + '%';
+                if (!bullet.classList.contains('laser')) {
+                    bullet.style.left = (parseFloat(bullet.style.left) + angle) + '%';
+                }
+                if (bulletY > 100 || parseFloat(bullet.style.left) < 0 || parseFloat(bullet.style.left) > 100) {
+                    bullet.remove();
+                    bullets.splice(index, 1);
+                }
+            });
+
+            enemies.forEach((enemy, index) => {
+                enemy.y += enemySpeed;
+                enemy.element.style.top = enemy.y + '%';
+                const playerRect = player.getBoundingClientRect();
+                const enemyRect = enemy.element.getBoundingClientRect();
+                if (checkCollision(playerRect, enemyRect)) {
+                    console.log(`Collision detected! Lives: ${lives - 1}, Enemy at (${enemyRect.left}, ${enemyRect.top})`);
+                    playerHitSound.currentTime = 0;
+                    playerHitSound.play();
+                    lives--;
+                    updateLivesDisplay();
+                    enemy.element.remove();
+                    enemies.splice(index, 1);
+                    if (lives <= 0) endGame();
+                    return;
+                }
+                bullets.forEach((bullet, bulletIndex) => {
+                    const bulletRect = bullet.getBoundingClientRect();
+                    if (checkCollision(bulletRect, enemyRect)) {
+                        enemyDestroyedSound.currentTime = 0;
+                        enemyDestroyedSound.play();
+                        enemy.element.remove();
+                        bullet.remove();
+                        enemies.splice(index, 1);
+                        bullets.splice(bulletIndex, 1);
+                        score += 50;
+                        scoreDisplay.textContent = score;
+                    }
+                });
+                if (enemy.y > 100) {
+                    enemy.element.remove();
+                    enemies.splice(index, 1);
+                }
+            });
+
+            powerups.forEach((powerup, index) => {
+                powerup.y += 0.5;
+                powerup.element.style.top = powerup.y + '%';
+                const playerRect = player.getBoundingClientRect();
+                const powerupRect = powerup.element.getBoundingClientRect();
+                if (checkCollision(playerRect, powerupRect)) {
+                    powerupSound.currentTime = 0;
+                    powerupSound.play();
+                    switch (powerup.type) {
+                        case 'life': lives = Math.min(lives + 1, 5); player.classList.add('shield'); setTimeout(() => player.classList.remove('shield'), 3000); break;
+                        case 'speed': bulletSpeed = 2.5; shootCooldown = 75; setTimeout(() => { bulletSpeed = 1.67; shootCooldown = 100; }, 10000); break;
+                        case 'multi': multiShot = true; setTimeout(() => multiShot = false, 10000); break;
+                        case 'laser': laserActive = true; shootCooldown = 25; setTimeout(() => { laserActive = false; shootCooldown = 100; }, 5000); break;
+                    }
+                    updateLivesDisplay();
+                    powerup.element.remove();
+                    powerups.splice(index, 1);
+                }
+                if (powerup.y > 100) {
+                    powerup.element.remove();
+                    powerups.splice(index, 1);
+                }
+            });
+        }
+
+        function checkCollision(rect1, rect2) {
+            const collision = rect1.left < rect2.right && rect1.right > rect2.left && rect1.top < rect2.bottom && rect1.bottom > rect2.top;
+            return collision;
+        }
+
+        function startGame() {
+            console.log('startGame() called');
+            resetGame();
+            console.log('Game reset complete');
+            startScreen.style.display = 'none';
+            console.log('Start screen hidden');
+            gameOverScreen.style.display = 'none';
+            gameActive = true;
+            console.log('Game active set to:', gameActive);
+            spawnEnemy();
+            spawnPowerup();
+            console.log('Initial enemies spawned:', enemies.length);
+        }
+
+        function endGame() {
+            console.log('Game ending');
+            gameActive = false;
+            finalScore.textContent = score;
+            gameOverScreen.style.display = 'flex';
+            gameOverSound.currentTime = 0;
+            gameOverSound.play();
+        }
+
+        function resetGame() {
+            console.log('Resetting game');
+            bullets.forEach(b => b.remove());
+            enemies.forEach(e => e.element.remove());
+            powerups.forEach(p => p.element.remove());
+            bullets = [];
+            enemies = [];
+            powerups = [];
+            score = 0;
+            lives = 3;
+            level = 1;
+            bulletSpeed = 1.67;
+            shootCooldown = 100;
+            multiShot = false;
+            laserActive = false;
+            baseEnemySpeed = 0.3;
+            scoreDisplay.textContent = score;
+            levelDisplay.textContent = level;
+            updateLivesDisplay();
+            playerX = 47.5;
+            player.style.left = playerX + '%';
+            player.classList.remove('shield');
+        }
+
+        // Event Listeners for Start and Restart
+        if (startButton) {
+            startButton.addEventListener('click', () => {
+                console.log('Start button clicked');
+                startGame();
+            });
+            console.log('Start button listener added');
+        } else {
+            console.error('startButton not found in DOM');
+        }
+
+        if (restartButton) {
+            restartButton.addEventListener('click', () => {
+                console.log('Restart button clicked');
+                startGame();
+            });
+            console.log('Restart button listener added');
+        } else {
+            console.error('restartButton not found in DOM');
+        }
+
+        window.addEventListener('resize', updateDimensions);
+        setInterval(updateGame, 1000 / 60);
+        setInterval(spawnEnemy, 1500);
+        setInterval(spawnPowerup, 5000);
+    </script>
+</body>
+</html>
