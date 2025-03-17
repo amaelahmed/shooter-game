@@ -31,17 +31,18 @@
             height: 100%; 
             background: #0f0f23; 
             position: relative; 
-            overflow: hidden; 
+            overflow: visible; /* Changed to visible to prevent clipping */
             border-radius: 8px;
-            padding-bottom: env(safe-area-inset-bottom); /* Adds space for home indicator */
+            padding-bottom: env(safe-area-inset-bottom);
         }
         #player { 
             width: 10%; 
             height: 8%; 
             background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI4MCI+PHBhdGggZD0iTTEwIDcwTDE4IDMwTDIwIDEwTDIyIDMwTDMwIDcwSDEwWiIgZmlsbD0iIzAwZmZjYyIgc3Ryb2tlPSIjMDBjYzk5IiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=') no-repeat center/contain; 
             position: absolute; 
-            bottom: 15%; /* Raised from 5% to avoid home indicator */
+            bottom: 15%; 
             transition: left 0.1s ease; 
+            z-index: 2; /* Ensure player is above game area */
         }
         #player.shield { 
             /* No glow */
@@ -56,6 +57,7 @@
             background: #ff0000; 
             position: absolute; 
             border-radius: 50%;
+            z-index: 3; /* Ensure bullets are visible */
         }
         .bullet.speed { 
             height: 4%; 
@@ -70,6 +72,7 @@
             width: 8%; 
             height: 7%; 
             position: absolute; 
+            z-index: 2; /* Ensure enemies are visible */
         }
         .enemy.level-0 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjZmYwMGZmIiBzdHJva2U9IiNjYzAwZmYiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
         .enemy.level-1 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjMDBmZjAwIiBzdHJva2U9IiMwMGNjMDAiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
@@ -82,6 +85,7 @@
             border-radius: 50%; 
             border: 1px solid rgba(255, 255, 255, 0.3);
             animation: pulse 1s infinite alternate; 
+            z-index: 2; /* Ensure powerups are visible */
         }
         .powerup.life { background: radial-gradient(circle, #ffff00, #ffcc00); }
         .powerup.speed { background: radial-gradient(circle, #00ff00, #00cc00); }
@@ -100,6 +104,7 @@
             padding: 5px 10px; 
             border-radius: 5px; 
             border: 1px solid #00ffcc;
+            z-index: 10; /* Above all game elements */
         }
         #lives { 
             position: absolute; 
@@ -111,6 +116,7 @@
             padding: 5px; 
             border-radius: 5px; 
             border: 1px solid #00ffcc;
+            z-index: 10; /* Above all game elements */
         }
         .heart { 
             width: 16px; 
@@ -128,7 +134,7 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            z-index: 10; 
+            z-index: 15; /* Above all game elements */
             backdrop-filter: blur(3px);
         }
         #gameOverScreen { display: none; }
@@ -161,13 +167,14 @@
         }
         #touchControls {
             position: absolute;
-            bottom: calc(50px + env(safe-area-inset-bottom)); /* Raised higher with safe area */
+            bottom: calc(100px + env(safe-area-inset-bottom)); /* Raised significantly higher */
             width: 100%;
             display: flex; 
             justify-content: space-between;
             padding: 0 20px;
             box-sizing: border-box;
-            z-index: 5;
+            z-index: 20; /* Highest z-index to ensure visibility */
+            background: rgba(255, 0, 0, 0.5); /* Temporary red background for debugging */
         }
         .touchButton {
             width: 70px; 
@@ -341,7 +348,7 @@
                     const bullet = document.createElement('div');
                     bullet.className = 'bullet laser';
                     bullet.style.left = (playerX + 2.25) + '%';
-                    bullet.style.bottom = '20%'; /* Adjusted to start higher */
+                    bullet.style.bottom = '20%';
                     gameArea.appendChild(bullet);
                     bullets.push(bullet);
                 } else if (multiShot) {
@@ -349,7 +356,7 @@
                         const bullet = document.createElement('div');
                         bullet.className = 'bullet';
                         bullet.style.left = (playerX + 2.25 + i * 2) + '%';
-                        bullet.style.bottom = '20%'; /* Adjusted to start higher */
+                        bullet.style.bottom = '20%';
                         bullet.dataset.angle = i * 0.1;
                         gameArea.appendChild(bullet);
                         bullets.push(bullet);
@@ -358,7 +365,7 @@
                     const bullet = document.createElement('div');
                     bullet.className = 'bullet' + (bulletSpeed > 1.67 ? ' speed' : '');
                     bullet.style.left = (playerX + 2.25) + '%';
-                    bullet.style.bottom = '20%'; /* Adjusted to start higher */
+                    bullet.style.bottom = '20%';
                     bullet.dataset.angle = '0';
                     gameArea.appendChild(bullet);
                     bullets.push(bullet);
