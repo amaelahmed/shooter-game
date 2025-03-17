@@ -33,13 +33,14 @@
             position: relative; 
             overflow: hidden; 
             border-radius: 8px;
+            padding-bottom: env(safe-area-inset-bottom); /* Adds space for home indicator */
         }
         #player { 
             width: 10%; 
             height: 8%; 
             background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI4MCI+PHBhdGggZD0iTTEwIDcwTDE4IDMwTDIwIDEwTDIyIDMwTDMwIDcwSDEwWiIgZmlsbD0iIzAwZmZjYyIgc3Ryb2tlPSIjMDBjYzk5IiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=') no-repeat center/contain; 
             position: absolute; 
-            bottom: 5%; 
+            bottom: 15%; /* Raised from 5% to avoid home indicator */
             transition: left 0.1s ease; 
         }
         #player.shield { 
@@ -160,7 +161,7 @@
         }
         #touchControls {
             position: absolute;
-            bottom: 20px; 
+            bottom: calc(50px + env(safe-area-inset-bottom)); /* Raised higher with safe area */
             width: 100%;
             display: flex; 
             justify-content: space-between;
@@ -340,7 +341,7 @@
                     const bullet = document.createElement('div');
                     bullet.className = 'bullet laser';
                     bullet.style.left = (playerX + 2.25) + '%';
-                    bullet.style.bottom = '10%';
+                    bullet.style.bottom = '20%'; /* Adjusted to start higher */
                     gameArea.appendChild(bullet);
                     bullets.push(bullet);
                 } else if (multiShot) {
@@ -348,7 +349,7 @@
                         const bullet = document.createElement('div');
                         bullet.className = 'bullet';
                         bullet.style.left = (playerX + 2.25 + i * 2) + '%';
-                        bullet.style.bottom = '10%';
+                        bullet.style.bottom = '20%'; /* Adjusted to start higher */
                         bullet.dataset.angle = i * 0.1;
                         gameArea.appendChild(bullet);
                         bullets.push(bullet);
@@ -357,7 +358,7 @@
                     const bullet = document.createElement('div');
                     bullet.className = 'bullet' + (bulletSpeed > 1.67 ? ' speed' : '');
                     bullet.style.left = (playerX + 2.25) + '%';
-                    bullet.style.bottom = '10%';
+                    bullet.style.bottom = '20%'; /* Adjusted to start higher */
                     bullet.dataset.angle = '0';
                     gameArea.appendChild(bullet);
                     bullets.push(bullet);
@@ -406,7 +407,7 @@
                 const enemySpeed = baseEnemySpeed + (Math.min(level, 5) * 0.05) - (level > 5 ? (level - 5) * 0.02 : 0);
 
                 bullets.forEach((bullet, index) => {
-                    let bulletY = parseFloat(bullet.style.bottom) || 10;
+                    let bulletY = parseFloat(bullet.style.bottom) || 20;
                     const angle = parseFloat(bullet.dataset.angle) || 0;
                     bulletY += bulletSpeed;
                     bullet.style.bottom = bulletY + '%';
