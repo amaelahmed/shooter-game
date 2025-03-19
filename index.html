@@ -13,7 +13,7 @@
             background: linear-gradient(135deg, #0f0f23 0%, #1a1a3d 100%);
             font-family: 'Orbitron', sans-serif; 
             color: #fff; 
-            touch-action: none;
+            touch-action: none; /* Prevents default touch behaviors */
         }
         #gameContainer { 
             position: relative; 
@@ -31,7 +31,7 @@
             height: 100%; 
             background: #0f0f23; 
             position: relative; 
-            overflow: visible; /* Changed to visible to prevent clipping */
+            overflow: visible; 
             border-radius: 8px;
             padding-bottom: env(safe-area-inset-bottom);
         }
@@ -41,8 +41,8 @@
             background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI4MCI+PHBhdGggZD0iTTEwIDcwTDE4IDMwTDIwIDEwTDIyIDMwTDMwIDcwSDEwWiIgZmlsbD0iIzAwZmZjYyIgc3Ryb2tlPSIjMDBjYzk5IiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=') no-repeat center/contain; 
             position: absolute; 
             bottom: 15%; 
-            transition: left 0.1s ease; 
-            z-index: 2; /* Ensure player is above game area */
+            transition: left 0.05s ease; /* Smoother movement */
+            z-index: 2; 
         }
         #player.shield { 
             /* No glow */
@@ -57,7 +57,7 @@
             background: #ff0000; 
             position: absolute; 
             border-radius: 50%;
-            z-index: 3; /* Ensure bullets are visible */
+            z-index: 3; 
         }
         .bullet.speed { 
             height: 4%; 
@@ -72,12 +72,12 @@
             width: 8%; 
             height: 7%; 
             position: absolute; 
-            z-index: 2; /* Ensure enemies are visible */
+            z-index: 2; 
         }
         .enemy.level-0 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjZmYwMGZmIiBzdHJva2U9IiNjYzAwZmYiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
         .enemy.level-1 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjMDBmZjAwIiBzdHJva2U9IiMwMGNjMDAiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
         .enemy.level-2 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjMDAwMGZmIiBzdHJva2U9IiMwMDAwY2MiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
-        .enemy.level-3 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjZmZmZjAwIiBzdHJva2U9IiNjY2NjMDAiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
+        .enemy.level-3 { background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI4MCI+PHBhdGggZD0iTTE2IDIwQTEwIDEwIDAgMCAxIDI2IDEwSDE4TDI0IDBDNiAwIDYgMTAgMTYgMTBaTTE2IDIwQTEwIDEwIDAgMCAwIDYgMTBIMTRMMCAwTDEwIDBaIiBmaWxsPSIjZmZmZjAwIiBzdHJva2U9IiNjY2NjMDAiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==') no-repeat center/contain; }
         .powerup { 
             width: 5%; 
             height: 4%; 
@@ -85,7 +85,7 @@
             border-radius: 50%; 
             border: 1px solid rgba(255, 255, 255, 0.3);
             animation: pulse 1s infinite alternate; 
-            z-index: 2; /* Ensure powerups are visible */
+            z-index: 2; 
         }
         .powerup.life { background: radial-gradient(circle, #ffff00, #ffcc00); }
         .powerup.speed { background: radial-gradient(circle, #00ff00, #00cc00); }
@@ -104,7 +104,7 @@
             padding: 5px 10px; 
             border-radius: 5px; 
             border: 1px solid #00ffcc;
-            z-index: 10; /* Above all game elements */
+            z-index: 10; 
         }
         #lives { 
             position: absolute; 
@@ -116,7 +116,7 @@
             padding: 5px; 
             border-radius: 5px; 
             border: 1px solid #00ffcc;
-            z-index: 10; /* Above all game elements */
+            z-index: 10; 
         }
         .heart { 
             width: 16px; 
@@ -134,7 +134,7 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            z-index: 15; /* Above all game elements */
+            z-index: 15; 
             backdrop-filter: blur(3px);
         }
         #gameOverScreen { display: none; }
@@ -165,48 +165,6 @@
             color: #e0e0e0;
             letter-spacing: 1px;
         }
-        #touchControls {
-            position: absolute;
-            bottom: calc(100px + env(safe-area-inset-bottom)); /* Raised significantly higher */
-            width: 100%;
-            display: flex; 
-            justify-content: space-between;
-            padding: 0 20px;
-            box-sizing: border-box;
-            z-index: 20; /* Highest z-index to ensure visibility */
-            background: rgba(255, 0, 0, 0.5); /* Temporary red background for debugging */
-        }
-        .touchButton {
-            width: 70px; 
-            height: 70px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid #00ffcc;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            color: #fff;
-            touch-action: none;
-            user-select: none;
-        }
-        .touchButton:active {
-            background: rgba(255, 255, 255, 0.4);
-        }
-        @media (max-width: 390px) { 
-            #gameContainer {
-                max-width: 100vw;
-                max-height: 100vh;
-            }
-            #ui, #lives {
-                font-size: 14px;
-            }
-            .touchButton {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
-            }
-        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -225,10 +183,6 @@
                 <h1>Game Over</h1>
                 <p>Final Score: <span id="finalScore">0</span></p>
                 <button id="restartButton">Play Again</button>
-            </div>
-            <div id="touchControls">
-                <div id="leftButton" class="touchButton">⬅️</div>
-                <div id="rightButton" class="touchButton">➡️</div>
             </div>
         </div>
     </div>
@@ -262,8 +216,6 @@
             const gameOverScreen = document.getElementById('gameOverScreen');
             const startButton = document.getElementById('startButton');
             const restartButton = document.getElementById('restartButton');
-            const leftButton = document.getElementById('leftButton');
-            const rightButton = document.getElementById('rightButton');
 
             const shootSound = document.getElementById('shootSound');
             const enemyDestroyedSound = document.getElementById('enemyDestroyedSound');
@@ -285,7 +237,9 @@
             let multiShot = false;
             let laserActive = false;
             let baseEnemySpeed = 0.3;
-            const moveStep = 5;
+            let touchStartX = null;
+            let touchCurrentX = null;
+            const maxMoveSpeed = 5; // Cap for movement speed
 
             console.log('startButton:', startButton);
             console.log('restartButton:', restartButton);
@@ -304,38 +258,50 @@
                 }
             }
 
-            function moveLeft() {
-                if (gameActive && playerX > 0) {
-                    playerX = Math.max(0, playerX - moveStep);
-                    player.style.left = playerX + '%';
-                    console.log('Moved left to:', playerX);
-                }
+            function movePlayer() {
+                if (!gameActive || touchStartX === null || touchCurrentX === null) return;
+                const deltaX = touchCurrentX - touchStartX;
+                const moveSpeed = Math.min(Math.abs(deltaX) * 0.1, maxMoveSpeed); // Speed based on swipe distance
+                const direction = deltaX > 0 ? 1 : -1;
+                playerX += moveSpeed * direction;
+                playerX = Math.max(0, Math.min(95, playerX)); // Keep within bounds (0% to 95%)
+                player.style.left = playerX + '%';
+                console.log('Player moved to:', playerX, 'Speed:', moveSpeed);
             }
 
-            function moveRight() {
-                if (gameActive && playerX < 95) {
-                    playerX = Math.min(95, playerX + moveStep);
-                    player.style.left = playerX + '%';
-                    console.log('Moved right to:', playerX);
-                }
-            }
+            // Touch Controls
+            gameArea.addEventListener('touchstart', (e) => {
+                if (!gameActive) return;
+                e.preventDefault();
+                touchStartX = e.touches[0].clientX;
+                touchCurrentX = touchStartX;
+            });
 
+            gameArea.addEventListener('touchmove', (e) => {
+                if (!gameActive) return;
+                e.preventDefault();
+                touchCurrentX = e.touches[0].clientX;
+                movePlayer();
+            });
+
+            gameArea.addEventListener('touchend', (e) => {
+                if (!gameActive) return;
+                e.preventDefault();
+                touchStartX = null;
+                touchCurrentX = null;
+            });
+
+            // Keyboard Controls (for desktop testing)
             document.addEventListener('keydown', (e) => {
                 if (!gameActive) return;
-                if (e.key === 'ArrowLeft') moveLeft();
-                else if (e.key === 'ArrowRight') moveRight();
-            });
-
-            leftButton.addEventListener('click', () => moveLeft());
-            rightButton.addEventListener('click', () => moveRight());
-
-            leftButton.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                moveLeft();
-            });
-            rightButton.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                moveRight();
+                const moveStep = 5;
+                if (e.key === 'ArrowLeft' && playerX > 0) {
+                    playerX = Math.max(0, playerX - moveStep);
+                    player.style.left = playerX + '%';
+                } else if (e.key === 'ArrowRight' && playerX < 95) {
+                    playerX = Math.min(95, playerX + moveStep);
+                    player.style.left = playerX + '%';
+                }
             });
 
             function shoot() {
@@ -407,6 +373,7 @@
                 const { height } = updateDimensions();
 
                 shoot();
+                movePlayer(); // Continuously update player position during swipe
 
                 level = Math.floor(score / 500) + 1;
                 levelDisplay.textContent = level;
@@ -536,6 +503,8 @@
                 playerX = 47.5;
                 player.style.left = playerX + '%';
                 player.classList.remove('shield');
+                touchStartX = null;
+                touchCurrentX = null;
             }
 
             if (startButton) {
